@@ -2,3 +2,7 @@ name: SuperCraft
 version: '${project.version}'
 main: silverassist.supercraft.SuperCraft
 api-version: 1.17
+
+commands:
+  supercraft:
+    usage: /supercraft...
