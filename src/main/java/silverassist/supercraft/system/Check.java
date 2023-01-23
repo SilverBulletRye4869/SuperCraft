@@ -12,13 +12,14 @@ public class Check {
     public static String table(Inventory inv){
         ItemStack[] invItems = new ItemStack[25];
         int[] side = rectSlot(inv);
-        int place = 0;
-        Map<String,ItemStack[]> candidate = Recipe.getRawMaterials();
+        Map<String,ItemStack[][]> candidate = Recipe.getRawItems();
         for(int i =side[0];i<side[1];i++){
-            for(int j = side[2];j<side[3];j++,place++){
+            for(int j = side[2];j<side[3];j++){
+                if(candidate.size()==0)return null;
                 ItemStack item = inv.getItem(slotPlace[i*5+j]);
-                candidate.forEach((key,value) ->{
-                    if(!item.equals(value))candidate.remove(key);
+                int h = i - side[0], w= j -side[2];
+                candidate.forEach((key, value) ->{
+                    if(!item.equals(value[h][w]))candidate.remove(key);
                 });
             }
         }
@@ -46,10 +47,11 @@ public class Check {
             break;
         }
 
+
         for(int i= 5*side[0];true;){
             if(inv.getItem(slotPlace[i])==null){
                 if((i+=5)>=5*side[1]) {
-                    if (i % 4 == 0) break;
+                    if (i % 5 == 4) break;
                     i = 5 * side[0] + (i % 5 + 1);
                 }
             }else{
@@ -57,11 +59,12 @@ public class Check {
                 break;
             }
         }
+
         if(side[2]==5)return null;
         for(int i = 5*side[1] -1;true;){
             if(inv.getItem(slotPlace[i]) == null){
                 if((i-=5)<5*side[0]){
-                    if(i%side[2]==0)break;
+                    if(i%5==side[2])break;
                     i = 5 * side[1] +(i%5-1);
                 }
             }else{
