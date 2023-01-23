@@ -17,14 +17,30 @@ import java.util.stream.Stream;
 
 public class Recipe {
     private static final JavaPlugin plugin = SuperCraft.getInstance();
-    private static Map<String,ItemStack[]> rawMaterials = new HashMap<>();
+    private static Map<String,ItemStack[][]> rawItems = new HashMap<>();
+    private static Map<String,ItemStack> craftItems = new HashMap<>();
 
-    public static Map<String,ItemStack[]> getRawMaterials(){
-        return rawMaterials;
+    public static Map<String,ItemStack[][]> getRawItems(){
+        return rawItems;
+    }
+    public static ItemStack[][] getRawItem(String id){
+        if(!rawItems.containsKey(id)){
+            if(!reload(id))return null;
+        }
+        return rawItems.get(id);
+    }
+
+    public static ItemStack getCraftItem(String id){
+        if(id.equals(null))return null;
+        if(!craftItems.containsKey(id)){
+            if(!reload(id))return null;
+        }
+        return craftItems.get(id);
+
     }
 
     public static void reloadAll(){
-        rawMaterials.clear();
+        rawItems.clear();
         Bukkit.getScheduler().runTaskAsynchronously(plugin,new Runnable(){
             @Override
             public void run() {
@@ -37,21 +53,24 @@ public class Recipe {
 
     public static boolean reload(String id){
         delete(id);
-        ItemStack[] raws = new ItemStack[25];
         if(!CustomConfig.existYml(id))return false;
-        YamlConfiguration y = CustomConfig.getYmlByID(id);
-        for(int i = 0;i<25;i++){
-            ItemStack item = y.getItemStack("raw."+i);
-            if(item==null)break;
-            else raws[i] =y.getItemStack("raw."+i);
+        YamlConfiguration yml = CustomConfig.getYmlByID(id);
+        int w = yml.getInt("raw.w",5);
+        int h = yml.getInt("raw.h",5);
+        ItemStack[][] raws = new ItemStack[h][w];
+        for(int i = 0;i<h;i++){
+            for(int j = 0;j<h;j++){
+                ItemStack item = yml.getItemStack("raw."+i+j);
+                if(item!=null)raws[i][j] =item;
+            }
         }
-        if(raws[0] == null)return false;
-        rawMaterials.put(id,raws);
+        craftItems.put(id,yml.getItemStack("item"));
+        rawItems.put(id,raws);
         return true;
     }
 
     public static void delete(String id){
-        if(rawMaterials.containsKey(id))rawMaterials.remove(id);
+        if(rawItems.containsKey(id)) rawItems.remove(id);
     }
 
 
