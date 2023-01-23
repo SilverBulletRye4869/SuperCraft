@@ -1,7 +1,11 @@
 package silverassist.supercraft;
 
 import org.bukkit.plugin.java.JavaPlugin;
+import silverassist.supercraft.menu.user.Crafting;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.logging.Logger;
 
 public final class SuperCraft extends JavaPlugin {
@@ -11,9 +15,18 @@ public final class SuperCraft extends JavaPlugin {
     @Override
     public void onEnable() {
         // Plugin startup logic
+        try{
+            Files.createDirectories(Paths.get(this.getDataFolder()+"/data"));
+        }catch (IOException e){
+            Util.sendConsole("dataフォルダの作成に失敗しました", Util.MessageType.ERROR);
+            e.printStackTrace();
+            plugin.getServer().getPluginManager().disablePlugin(this);
+            return;
+        }
         plugin = this;
         log = getLogger();
-
+        Crafting crafting = new Crafting(plugin);
+        new Command(plugin,crafting);
     }
 
     public static JavaPlugin getInstance(){return plugin;}
