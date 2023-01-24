@@ -1,6 +1,7 @@
 package silverassist.supercraft.system;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -60,8 +61,7 @@ public class Recipe {
         ItemStack[][] raws = new ItemStack[h][w];
         for(int i = 0;i<h;i++){
             for(int j = 0;j<h;j++){
-                ItemStack item = yml.getItemStack("raw."+i+j);
-                if(item!=null)raws[i][j] =item;
+                raws[i][j] = yml.getItemStack("raw."+i+j,new ItemStack(Material.AIR,0));
             }
         }
         craftItems.put(id,yml.getItemStack("item"));

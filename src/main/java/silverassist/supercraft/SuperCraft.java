@@ -2,6 +2,7 @@ package silverassist.supercraft;
 
 import org.bukkit.plugin.java.JavaPlugin;
 import silverassist.supercraft.menu.user.Crafting;
+import silverassist.supercraft.system.Recipe;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -27,6 +28,8 @@ public final class SuperCraft extends JavaPlugin {
         log = getLogger();
         Crafting crafting = new Crafting(plugin);
         new Command(plugin,crafting);
+
+        Recipe.reloadAll();
     }
 
     public static JavaPlugin getInstance(){return plugin;}

@@ -53,7 +53,8 @@ public class SetCraft {
             for(int i=0;i<25;i++)yml.set("raw."+i/5+i%5,null);
             for(int x = side[0];x<side[1];x++){
                 for(int y = side[2];y<side[3];y++){
-                    yml.set("raw."+(x - side[0])+(y - side[2]),inv.getItem(x*9+y));
+                    ItemStack item = inv.getItem(x*9+y);
+                    yml.set("raw."+(x - side[0])+(y - side[2]),item);
                 }
             }
             yml.set("item",inv.getItem(24));
