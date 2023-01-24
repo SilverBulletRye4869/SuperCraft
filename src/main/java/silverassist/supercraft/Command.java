@@ -39,7 +39,8 @@ public class Command implements CommandExecutor {
                 if(!CustomConfig.existYml(id))CustomConfig.createYmlByID(id);
             case "edit":
                 if(!CustomConfig.existYml(id)){
-                    Util.sendPrefixMessage(p,"§c§l");
+                    Util.sendPrefixMessage(p,"§c§lそのレシピidは存在しません");
+                    return true;
                 }
                 new SetCraft(plugin,p,id).open();
                 break;
