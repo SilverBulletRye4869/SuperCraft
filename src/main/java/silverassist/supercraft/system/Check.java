@@ -16,20 +16,19 @@ public class Check {
 
     public static String table(Inventory inv){
         int[] side = rectSlot(inv);
-        Map<String,ItemStack[][]> candidate = new HashMap<>(Recipe.getRawItems());
         if(side == null)return null;
+        Map<String,ItemStack[][]> candidate = new HashMap<>(Recipe.getRawItems());
         new HashMap<>(candidate).forEach((key, value) ->{
             if(value.length!= (side[1]-side[0]) || value[0].length!= (side[3]-side[2])){
                 candidate.remove(key);
                 return;
             }
-            System.out.println(Arrays.toString(side));
             for(int i =side[0];i<side[1];i++){
                 int h = i - side[0];
                 for(int j = side[2];j<side[3];j++){
                     ItemStack item = inv.getItem(slotPlace[i*5+j]) == null ? AIR : inv.getItem(slotPlace[i*5+j]);
                     int w= j -side[2];
-                    if(value.length <= h || value[h].length <= w || !item.equals(value[h][w])){
+                    if(!item.equals(value[h][w])){
                         candidate.remove(key);
                         return;
                     };

@@ -56,15 +56,16 @@ public class Recipe {
         delete(id);
         if(!CustomConfig.existYml(id))return false;
         YamlConfiguration yml = CustomConfig.getYmlByID(id);
+        if(!yml.getBoolean("isEnable",true))return false;
         int w = yml.getInt("raw.w",5);
         int h = yml.getInt("raw.h",5);
         ItemStack[][] raws = new ItemStack[h][w];
         for(int i = 0;i<h;i++){
-            for(int j = 0;j<h;j++){
+            for(int j = 0;j<w;j++){
                 raws[i][j] = yml.getItemStack("raw."+i+j,new ItemStack(Material.AIR,0));
             }
         }
-        craftItems.put(id,yml.getItemStack("item"));
+        craftItems.put(id,yml.getItemStack("item.single"));
         rawItems.put(id,raws);
         return true;
     }

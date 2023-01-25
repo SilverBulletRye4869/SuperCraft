@@ -15,6 +15,7 @@ import java.util.logging.Logger;
 public class Util {
     public static final String PREFIX = "§b§l[§e§lSuperCraft§b§l]";
     public static final ItemStack GUI_BG = createItem(Material.LIGHT_BLUE_STAINED_GLASS_PANE,"§r");
+    public static final ItemStack NULL_BG = createItem(Material.LIGHT_GRAY_STAINED_GLASS_PANE,"§r");
 
     private static Logger log = SuperCraft.getLog();
     private static JavaPlugin plugin = SuperCraft.getInstance();
