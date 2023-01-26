@@ -6,10 +6,13 @@ import org.bukkit.command.PluginCommand;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
-import silverassist.supercraft.menu.admin.SetCraft;
+import silverassist.supercraft.menu.admin.CraftEdit;
+import silverassist.supercraft.menu.admin.CraftList;
 import silverassist.supercraft.menu.user.Crafting;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class Command implements CommandExecutor {
     private final JavaPlugin plugin;
@@ -42,7 +45,10 @@ public class Command implements CommandExecutor {
                     Util.sendPrefixMessage(p,"§c§lそのレシピidは存在しません");
                     return true;
                 }
-                new SetCraft(plugin,p,id).open();
+                new CraftEdit(plugin,p,id).open();
+                break;
+            case "list":
+                new CraftList(plugin,p,List.of(args).contains("-icon"),List.of(args).contains("-enable")).open(0);
                 break;
 
 
