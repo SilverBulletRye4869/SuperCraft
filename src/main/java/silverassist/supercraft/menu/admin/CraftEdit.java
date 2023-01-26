@@ -19,7 +19,7 @@ import silverassist.supercraft.system.Check;
 import silverassist.supercraft.system.Recipe;
 
 
-public class SetCraft {
+public class CraftEdit {
     private final JavaPlugin plugin;
     private final Player P;
     private final String ID;
@@ -27,7 +27,7 @@ public class SetCraft {
     private final ItemStack GUI_ENABLE = Util.createItem(Material.LIME_STAINED_GLASS_PANE,"§a§l製作可能");
     private final ItemStack GUI_DISABLE = Util.createItem(Material.RED_STAINED_GLASS_PANE,"§c§l製作不可");
 
-    public SetCraft(JavaPlugin plugin, Player p, String id){
+    public CraftEdit(JavaPlugin plugin, Player p, String id){
         this.plugin = plugin;
         this.P = p;
         this.ID =id;
