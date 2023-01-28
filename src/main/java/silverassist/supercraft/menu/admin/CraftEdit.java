@@ -15,8 +15,11 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import silverassist.supercraft.CustomConfig;
 import silverassist.supercraft.Util;
+import silverassist.supercraft.menu.admin.craftLottery.ItemList;
 import silverassist.supercraft.system.Check;
 import silverassist.supercraft.system.Recipe;
+
+import java.util.function.Function;
 
 
 public class CraftEdit {
@@ -24,8 +27,8 @@ public class CraftEdit {
     private final Player P;
     private final String ID;
     private final YamlConfiguration YML;
-    private final ItemStack GUI_ENABLE = Util.createItem(Material.LIME_STAINED_GLASS_PANE,"§a§l製作可能");
-    private final ItemStack GUI_DISABLE = Util.createItem(Material.RED_STAINED_GLASS_PANE,"§c§l製作不可");
+    private final Function<String,ItemStack> GUI_ENABLE = (name) -> Util.createItem(Material.LIME_STAINED_GLASS_PANE,"§a§l"+name);
+    private final Function<String,ItemStack> GUI_DISABLE = (name) ->Util.createItem(Material.RED_STAINED_GLASS_PANE,"§c§l"+name);
 
     public CraftEdit(JavaPlugin plugin, Player p, String id){
         this.plugin = plugin;
@@ -41,7 +44,10 @@ public class CraftEdit {
         for(int slot:Util.getRectSlotPlaces(5,4,5))inv.setItem(slot, Util.GUI_BG);
         inv.setItem(24,YML.getItemStack("item.single"));
         for(int i =0;i<25;i++)inv.setItem(9 * (i/5) + i%5, YML.getItemStack("raw."+i/5+i%5));
-        inv.setItem(44,YML.getBoolean("isEnable",true) ? GUI_ENABLE : GUI_DISABLE);
+
+        inv.setItem(42,Util.createItem(Material.CHEST,"§6§lマルチクラフトのアイテム編集"));
+        inv.setItem(43,YML.getBoolean("isMulti",false) ? GUI_ENABLE.apply("マルチモード有効") : GUI_DISABLE.apply("マルチモード無効"));
+        inv.setItem(44,YML.getBoolean("isEnable",true) ? GUI_ENABLE.apply("製作可能") : GUI_DISABLE.apply("製作不可"));
         P.openInventory(inv);
     }
 
@@ -74,11 +80,23 @@ public class CraftEdit {
             if(e.getCurrentItem() == null || !e.getClickedInventory().getType().equals(InventoryType.CHEST))return;
             int slot = e.getSlot();
             if(slot%9 > 4 && slot!=24)e.setCancelled(true);
-            if(slot == 44){
-                boolean toEnable = e.getCurrentItem().getType() == Material.RED_STAINED_GLASS_PANE;
-                e.getClickedInventory().setItem(44, toEnable ? GUI_ENABLE : GUI_DISABLE);
-                CustomConfig.getYmlByID(ID).set("isEnable",toEnable);
-                CustomConfig.saveYmlByID(ID);
+
+            switch (slot){
+                case 42:
+                    new ItemList(plugin,P,ID).open();
+                    break;
+                case 43:
+                case 44:
+                    boolean toEnable = e.getCurrentItem().getType() == Material.RED_STAINED_GLASS_PANE;
+                    if(slot == 43) {
+                        e.getClickedInventory().setItem(43, toEnable ? GUI_ENABLE.apply("マルチモード有効") : GUI_DISABLE.apply("マルチモード無効"));
+                        CustomConfig.getYmlByID(ID).set("isMulti", toEnable);
+                    }else{
+                        e.getClickedInventory().setItem(44, toEnable ? GUI_ENABLE.apply("製作可能") : GUI_DISABLE.apply("製作不可"));
+                        CustomConfig.getYmlByID(ID).set("isEnable", toEnable);
+                    }
+                    CustomConfig.saveYmlByID(ID);
+                    break;
             }
         }
     }
