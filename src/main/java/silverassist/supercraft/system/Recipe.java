@@ -2,6 +2,7 @@ package silverassist.supercraft.system;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -14,12 +15,18 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 public class Recipe {
+
     private static final JavaPlugin plugin = SuperCraft.getInstance();
     private static Map<String,ItemStack[][]> rawItems = new HashMap<>();
     private static Map<String,ItemStack> craftItems = new HashMap<>();
+    private static HashSet<String> multiModes = new HashSet<>();
+    public static final Predicate<String> isMulti = id -> multiModes.contains(id);
+    private static Map<String,LinkedHashMap<Integer,ItemStack>> multiModeItems = new HashMap<>();
+
 
     public static Map<String,ItemStack[][]> getRawItems(){
         return rawItems;
@@ -57,6 +64,8 @@ public class Recipe {
         if(!CustomConfig.existYml(id))return false;
         YamlConfiguration yml = CustomConfig.getYmlByID(id);
         if(!yml.getBoolean("isEnable",true))return false;
+
+        //クラフト素材のreload
         int w = yml.getInt("raw.w",5);
         int h = yml.getInt("raw.h",5);
         ItemStack[][] raws = new ItemStack[h][w];
@@ -65,13 +74,32 @@ public class Recipe {
                 raws[i][j] = yml.getItemStack("raw."+i+j,new ItemStack(Material.AIR,0));
             }
         }
+
+        //クラフト先のreload
+        //シングルクラフト
         craftItems.put(id,yml.getItemStack("item.single"));
         rawItems.put(id,raws);
+        //マルチクラフト
+        if(yml.getBoolean("isMulti")){
+            multiModes.add(id);
+            LinkedHashMap<Integer,ItemStack> multiModeItem = new LinkedHashMap<>();
+            ConfigurationSection yml_multiMode = yml.getConfigurationSection("item.multi");
+            int max = 0;
+            for(int i = 0;i<27;i++){
+                ItemStack item = yml_multiMode.getItemStack(i+".item");
+                if(item == null)break;
+                max += yml_multiMode.getInt(i+".weight");
+                multiModeItem.put(max,item);
+            }
+            multiModeItems.put(id,multiModeItem);
+        }
         return true;
     }
 
     public static void delete(String id){
-        if(rawItems.containsKey(id)) rawItems.remove(id);
+        rawItems.remove(id);
+        multiModes.remove(id);
+        multiModeItems.remove(id);
     }
 
 
