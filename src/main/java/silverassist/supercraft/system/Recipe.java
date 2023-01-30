@@ -26,6 +26,7 @@ public class Recipe {
     private static HashSet<String> multiModes = new HashSet<>();
     public static final Predicate<String> isMulti = id -> multiModes.contains(id);
     private static Map<String,LinkedHashMap<Integer,ItemStack>> multiModeItems = new HashMap<>();
+    private static Map<String,LinkedHashMap<Integer,String>> multiModeMsgs = new HashMap<>();
 
 
     public static Map<String,ItemStack[][]> getRawItems(){
@@ -83,6 +84,7 @@ public class Recipe {
         if(yml.getBoolean("isMulti")){
             multiModes.add(id);
             LinkedHashMap<Integer,ItemStack> multiModeItem = new LinkedHashMap<>();
+            LinkedHashMap<Integer,String> multiModeMsg = new LinkedHashMap<>();
             ConfigurationSection yml_multiMode = yml.getConfigurationSection("item.multi");
             int max = 0;
             for(int i = 0;i<27;i++){
@@ -90,8 +92,10 @@ public class Recipe {
                 if(item == null)break;
                 max += yml_multiMode.getInt(i+".weight");
                 multiModeItem.put(max,item);
+                multiModeMsg.put(i,yml_multiMode.getString(i+".message"));
             }
             multiModeItems.put(id,multiModeItem);
+            multiModeMsgs.put(id,multiModeMsg);
         }
         return true;
     }
