@@ -50,6 +50,14 @@ public class Command implements CommandExecutor {
             case "list":
                 new CraftList(plugin,p,List.of(args).contains("-icon"),List.of(args).contains("-enable")).open(0);
                 break;
+            case "setmessage":
+                if(args.length<4 || !CustomConfig.existYml(id) || !args[2].matches("\\d+"))return true;
+                int itemID = Integer.parseInt(args[2]);
+                if(itemID>26||itemID<0)return true;
+                CustomConfig.getYmlByID(id).set("item.multi."+itemID+".message",args[3]);
+                CustomConfig.saveYmlByID(id);
+                break;
+
 
 
         }
