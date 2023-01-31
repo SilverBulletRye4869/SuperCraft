@@ -25,7 +25,7 @@ public class SetNum {
     private static final JavaPlugin plugin = SuperCraft.getInstance();
 
 
-    private final Player p;
+    private final Player P;
     private final String PATH;
     private final String CRAFT_ID;
     private final YamlConfiguration DATA;
@@ -35,7 +35,7 @@ public class SetNum {
 
     public SetNum(Player p,String craftID, String path){this(p,craftID,path,0);}
     public SetNum(Player p,String craftID, String path, int minNum) {
-        this.p = p;
+        this.P = p;
         p.closeInventory();
         this.PATH = path;
         this.CRAFT_ID = craftID;
@@ -46,7 +46,7 @@ public class SetNum {
     }
 
     public void open(){
-        Inventory inv = Bukkit.createInventory(p,54, Util.PREFIX+"§r"+PATH+"の設定");
+        Inventory inv = Bukkit.createInventory(P,54, Util.PREFIX+"§r"+PATH+"の設定");
         Util.invFill(inv);
         for(int i = 0;i<numKeyPos.size();i++){
             ItemStack item = Util.createItem(Material.PAPER, "§6§l" + i);
@@ -56,12 +56,7 @@ public class SetNum {
         inv.setItem(15,Util.createItem(nowNum == 0 ? Material.PAPER : Material.MAP,"§6§l"+nowNum));
         inv.setItem(41,Util.createItem(Material.RED_STAINED_GLASS_PANE,"§c§lリセット"));
         inv.setItem(43,Util.createItem(Material.LIME_STAINED_GLASS_PANE,"§a§l確定"));
-        Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
-            @Override
-            public void run() {
-                p.openInventory(inv);
-            }
-        },1);
+        Bukkit.getScheduler().runTaskLater(plugin, () -> P.openInventory(inv),1);
     }
 
 
@@ -69,13 +64,13 @@ public class SetNum {
     private class listener implements Listener {
         @EventHandler
         public void onInventoryClose(InventoryCloseEvent e){
-            if(!p.equals(e.getPlayer()))return;
+            if(!P.equals(e.getPlayer()))return;
             HandlerList.unregisterAll(this);
-
+            new Item(plugin,P,CRAFT_ID,Integer.parseInt(PATH.split("\\.")[2])).open();
         }
         @EventHandler
         public void onInventoryClick(InventoryClickEvent e){
-            if(!p.equals(e.getWhoClicked()) || !e.getInventory().getType().equals(InventoryType.CHEST))return;
+            if(!P.equals(e.getWhoClicked()) || !e.getInventory().getType().equals(InventoryType.CHEST))return;
             e.setCancelled(true);
             int slot = e.getSlot();
             switch (slot){
@@ -89,7 +84,7 @@ public class SetNum {
                         return;
                     }
                     DATA.set(PATH,nowNum);
-                    p.closeInventory();
+                    P.closeInventory();
                     break;
                 default:
                     if(nowNum>9999999 || !numKeyPos.contains(slot))return;
