@@ -8,11 +8,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import silverassist.supercraft.menu.admin.CraftEdit;
 import silverassist.supercraft.menu.admin.CraftList;
+import silverassist.supercraft.menu.admin.craftLottery.Item;
 import silverassist.supercraft.menu.user.Crafting;
+import silverassist.supercraft.system.Recipe;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 public class Command implements CommandExecutor {
     private final JavaPlugin plugin;
@@ -56,7 +56,15 @@ public class Command implements CommandExecutor {
                 if(itemID>26||itemID<0)return true;
                 CustomConfig.getYmlByID(id).set("item.multi."+itemID+".message",args[3]);
                 CustomConfig.saveYmlByID(id);
+                new Item(plugin,p,id,itemID).open();
                 break;
+            case "reload":
+                if(id==null)plugin.reloadConfig();
+                else{
+                    if(!CustomConfig.existYml(id))return true;
+                    Recipe.reload(id);
+                }
+
 
 
 
@@ -68,6 +76,17 @@ public class Command implements CommandExecutor {
 
         @Override
         public List<String> onTabComplete(CommandSender sender, org.bukkit.command.Command command, String alias, String[] args) {
+            if(!sender.isOp())return null;
+            switch (args.length){
+                case 1:
+                    return List.of("craft","create","edit","list","reload");
+                case 2:
+                    switch (args[0]){
+                        case "edit":
+                        case "reload":
+                            return Recipe.getRecipeList(args[1]);
+                    }
+            }
             return null;
         }
     }
