@@ -18,9 +18,8 @@ public class Util {
     public static final String PREFIX = "§b§l[§e§lSuperCraft§b§l]";
     public static final ItemStack GUI_BG = createItem(Material.LIGHT_BLUE_STAINED_GLASS_PANE,"§r");
     public static final ItemStack NULL_BG = createItem(Material.LIGHT_GRAY_STAINED_GLASS_PANE,"§r");
-
-    private static Logger log = SuperCraft.getLog();
-    private static JavaPlugin plugin = SuperCraft.getInstance();
+    private static final Logger log = SuperCraft.getLog();
+    private static final JavaPlugin plugin = SuperCraft.getInstance();
 
     public static ItemStack createItem(Material m,String name){return createItem(m,name,null,0,null);}
     public static ItemStack createItem(Material m, String name, List<String> lore){return createItem(m,name,lore,0,null);}
@@ -86,6 +85,10 @@ public class Util {
         TextComponent msg = new TextComponent(PREFIX + text);
         msg.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, command));
         p.spigot().sendMessage(msg);
+    }
+
+    public static void broadcast(String s){
+        plugin.getServer().broadcastMessage(s);
     }
 
 }
