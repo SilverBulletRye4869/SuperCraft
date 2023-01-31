@@ -48,7 +48,7 @@ public class CraftEdit {
         inv.setItem(42,Util.createItem(Material.CHEST,"§6§lマルチクラフトのアイテム編集"));
         inv.setItem(43,YML.getBoolean("isMulti",false) ? GUI_ENABLE.apply("マルチモード有効") : GUI_DISABLE.apply("マルチモード無効"));
         inv.setItem(44,YML.getBoolean("isEnable",true) ? GUI_ENABLE.apply("製作可能") : GUI_DISABLE.apply("製作不可"));
-        P.openInventory(inv);
+        Bukkit.getScheduler().runTaskLater(plugin,()-> P.openInventory(inv),1);
     }
 
     private class listener implements Listener{

@@ -15,8 +15,10 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 import silverassist.supercraft.CustomConfig;
 import silverassist.supercraft.Util;
+import silverassist.supercraft.menu.admin.CraftEdit;
 
 import java.util.HashSet;;
+import java.util.List;
 import java.util.Set;
 
 public class ItemList {
@@ -41,24 +43,26 @@ public class ItemList {
         for(int i = 0;i<27 && yml_multiMode!=null;i++){
             int i_f = i;
             ItemStack item = yml_multiMode.getItemStack(i_f +".item",null);
-            if(item == null)return;
+            if(item == null)break;
             existItemSet.add(item);
             item = new ItemStack(item){{
                 ItemMeta meta = getItemMeta();
-                meta.getLore().add("§6§l比重: "+yml_multiMode.getInt(i_f +".weight"));
+                if(meta.getLore()==null)meta.setLore(List.of("§6§l比重: "+yml_multiMode.getInt(i_f +".weight")));
+                else meta.getLore().add("§6§l比重: "+yml_multiMode.getInt(i_f +".weight"));
                 setItemMeta(meta);
             }};
             inv.setItem(i,item);
         }
-        P.openInventory(inv);
+        Bukkit.getScheduler().runTaskLater(plugin,()-> P.openInventory(inv),1);
     }
 
+    private boolean isBack = true;
     private class listener implements Listener {
         @EventHandler
         public void onInventoryClose(InventoryCloseEvent e){
             if(!P.equals(e.getPlayer()))return;
-
             HandlerList.unregisterAll(this);
+            if(isBack)new CraftEdit(plugin,P,ID).open();
         }
 
         @EventHandler
@@ -79,12 +83,14 @@ public class ItemList {
                     YML.set("item.multi."+dataSize+".weight",1);
                     item = new ItemStack(item){{
                         ItemMeta meta = getItemMeta();
-                        meta.getLore().add("§6§l比重: "+1);
+                        if(meta.getLore()==null)meta.setLore(List.of("§6§l比重: "+1));
+                        else meta.getLore().add("§6§l比重: "+1);
                         setItemMeta(meta);
                     }};
                     P.getOpenInventory().setItem(dataSize,item);
                     break;
                 case CHEST:
+                    isBack = false;
                     new Item(plugin,P,ID,e.getSlot()).open();
                     break;
             }
