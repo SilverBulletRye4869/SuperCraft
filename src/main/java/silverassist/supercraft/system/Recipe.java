@@ -2,7 +2,6 @@ package silverassist.supercraft.system;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -15,6 +14,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.function.BiFunction;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -26,7 +26,8 @@ public class Recipe {
     private static HashSet<String> multiModes = new HashSet<>();
     public static final Predicate<String> isMulti = id -> multiModes.contains(id);
     private static Map<String,LinkedHashMap<Integer,ItemStack>> multiModeItems = new HashMap<>();
-    private static Map<String,LinkedHashMap<Integer,String>> multiModeMsgs = new HashMap<>();
+    private static Map<String,LinkedList<String>> multiModeMsgs = new HashMap<>();
+    public static final BiFunction<String,Integer,String> getMsg = (id,index) -> multiModeMsgs.get(id).get(index);
 
 
     public static Map<String,ItemStack[][]> getRawItems(){
@@ -50,14 +51,7 @@ public class Recipe {
 
     public static void reloadAll(){
         rawItems.clear();
-        Bukkit.getScheduler().runTaskAsynchronously(plugin,new Runnable(){
-            @Override
-            public void run() {
-                getRecipeList().forEach(id->{
-                    reload(id);
-                });
-            }
-        });
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> getRecipeList().forEach(Recipe::reload));
     }
 
     public static boolean reload(String id){
@@ -84,20 +78,24 @@ public class Recipe {
         if(yml.getBoolean("isMulti")){
             multiModes.add(id);
             LinkedHashMap<Integer,ItemStack> multiModeItem = new LinkedHashMap<>();
-            LinkedHashMap<Integer,String> multiModeMsg = new LinkedHashMap<>();
-            ConfigurationSection yml_multiMode = yml.getConfigurationSection("item.multi");
+            LinkedList multiModeMsg = new LinkedList();
             int max = 0;
             for(int i = 0;i<27;i++){
-                ItemStack item = yml_multiMode.getItemStack(i+".item");
+                ItemStack item = yml.getItemStack("item.multi."+i+".item");
                 if(item == null)break;
-                max += yml_multiMode.getInt(i+".weight");
+                max += yml.getInt("item.multi."+i+".weight");
                 multiModeItem.put(max,item);
-                multiModeMsg.put(i,yml_multiMode.getString(i+".message"));
+                multiModeMsg.add(yml.getString("item.multi."+i+".message"));
             }
             multiModeItems.put(id,multiModeItem);
             multiModeMsgs.put(id,multiModeMsg);
         }
         return true;
+    }
+
+    public static LinkedHashMap<Integer,ItemStack> getMultiModeItem(String id){
+        if(multiModeItems.containsKey(id))return multiModeItems.get(id);
+        return null;
     }
 
     public static void delete(String id){
