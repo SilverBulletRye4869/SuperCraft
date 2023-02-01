@@ -32,7 +32,7 @@ public class CustomConfig {
         try {
             file.createNewFile();
         }catch (IOException e){
-            System.err.println("[TradeShop]id: "+id+"のymlファイルの作成に失敗しました");
+            Util.sendConsole("[TradeShop]id: "+id+"のymlファイルの作成に失敗しました", Util.MessageType.ERROR);
             e.printStackTrace();
             return null;
         }
@@ -61,7 +61,8 @@ public class CustomConfig {
         try{
             config.get(id).save(new File(plugin.getDataFolder(),"data/" + id + ".yml"));
         }catch (IOException e){
-            System.err.println("[TradeShop]ガチャ『"+id+"』の保存に失敗しました。:"+e);
+            Util.sendConsole("[TradeShop]ガチャ『"+id+"』の保存に失敗しました。:", Util.MessageType.ERROR);
+            e.printStackTrace();
         }
     }
 }

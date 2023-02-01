@@ -4,6 +4,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import silverassist.supercraft.SuperCraft;
+import silverassist.supercraft.Util;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -30,17 +31,17 @@ public class Log {
                 logFile.createNewFile();
                 isFirstWrite = true;
             }catch (IOException e){
-                System.err.println("[GachaPlugin]"+id+"のlogファイルの作成に失敗しました");
+                Util.sendConsole("[SuperCraft]" + id + "のlogファイルの作成に失敗しました", Util.MessageType.ERROR);
                 e.printStackTrace();
                 playerLogErrorMessage(p,dateStr);
             }
         }
         if(!logFile.isFile()){
-            System.err.println("[GachaPlugin]logファイル『"+logFile.getPath()+"』はファイルではありません");
+            Util.sendConsole("[SuperCraft]logファイル『"+logFile.getPath()+"』はファイルではありません", Util.MessageType.ERROR);
             playerLogErrorMessage(p,dateStr);
             return;
         }else if(!logFile.canWrite()){
-            System.err.println("[GachaPlugin]logファイル『"+logFile.getPath()+"』は書き込み不可のファイルです");
+            Util.sendConsole("[SuperCraft]logファイル『"+logFile.getPath()+"』は書き込み不可のファイルです", Util.MessageType.ERROR);
             playerLogErrorMessage(p,dateStr);
             return;
         }
@@ -52,7 +53,7 @@ public class Log {
             fileWriter.write(writeData);
             fileWriter.close();
         }catch (IOException e){
-            System.err.println("[GachaPlugin]logファイル『"+logFile.getPath()+"』への書き込みに失敗しました");
+            Util.sendConsole("[SuperCraft]logファイル『"+logFile.getPath()+"』への書き込みに失敗しました", Util.MessageType.ERROR);
             e.printStackTrace();
             playerLogErrorMessage(p,dateStr);
             return;
@@ -62,7 +63,7 @@ public class Log {
 
     private static void playerLogErrorMessage(Player p, String date){
         p.sendMessage("§4§lこの文章が表示された場合は、以下の内容を運営までお伝えください。(スクリーンショット推奨)");
-        p.sendMessage("§c§l"+date+" -> GachaPluginでエラーが発生");
+        p.sendMessage("§c§l"+date+" -> SuerCraftでエラーが発生");
         p.sendMessage("§c§lコンソールを至急確認してください");
     }
 }
