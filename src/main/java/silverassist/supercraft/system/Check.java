@@ -5,13 +5,12 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import silverassist.supercraft.Util;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
 public class Check {
-    private static final ItemStack AIR = new ItemStack(Material.AIR,0);
+    private static final ItemStack AIR = new ItemStack(Material.AIR);
     private static int[] slotPlace = Util.getRectSlotPlaces(0,5,5);
 
     public static String table(Inventory inv){
@@ -28,7 +27,8 @@ public class Check {
                 for(int j = side[2];j<side[3];j++){
                     ItemStack item = inv.getItem(slotPlace[i*5+j]) == null ? AIR : inv.getItem(slotPlace[i*5+j]);
                     int w= j -side[2];
-                    if(!item.equals(value[h][w])){
+                    if(!new ItemStack(item){{setAmount(1);}}.equals(new ItemStack(value[h][w]){{setAmount(1);}}) ||
+                    item.getAmount() < value[h][w].getAmount()){
                         candidate.remove(key);
                         return;
                     };
