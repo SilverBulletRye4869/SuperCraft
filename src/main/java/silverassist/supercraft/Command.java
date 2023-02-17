@@ -1,10 +1,13 @@
 package silverassist.supercraft;
 
+import de.tr7zw.changeme.nbtapi.NBTItem;
+import org.bukkit.Material;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import silverassist.supercraft.menu.admin.CraftEdit;
 import silverassist.supercraft.menu.admin.CraftList;
@@ -64,6 +67,14 @@ public class Command implements CommandExecutor {
                     if(!CustomConfig.existYml(id))return true;
                     Recipe.reload(id);
                 }
+                break;
+            case "get":
+                int dur = (id==null || !args[1].matches("\\d+")) ? 1 : Integer.parseInt(args[1]) ;
+                ItemStack item = new NBTItem(Util.createItem(Material.CRAFTING_TABLE,"§b§lSuperCraft"))
+                    {{set("supercraft",dur);}}.getItem();
+                p.getInventory().addItem(item);
+
+
 
 
 
@@ -79,7 +90,7 @@ public class Command implements CommandExecutor {
             if(!sender.isOp())return null;
             switch (args.length){
                 case 1:
-                    return List.of("craft","create","edit","list","reload");
+                    return List.of("craft","create","edit","list","reload","get");
                 case 2:
                     switch (args[0]){
                         case "edit":
